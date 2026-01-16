@@ -30,14 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // --- 2. GESTION DU RESPONSIVE ---
-  // Cette fonction recupere la chaine brute (ex: "10rem") selon l'ecran
   const getResponsiveRawValue = (attrValue) => {
     if (!attrValue) return null;
-    // On separe par virgule
     const values = attrValue.split(',');
     const w = window.innerWidth;
 
-    // Logique Breakpoints
     if (values.length === 1) return values[0]; // all
     if (w > 991) return values[0]; // Desktop
     if (w > 479) return values[1] !== undefined ? values[1] : values[0]; // Tablette
@@ -46,8 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- 3. COEUR DU SYSTEME ---
   const updateProgress = () => {
-    // A. Trouver la source (div specifique ou body)
-    const definedSource = document.querySelector('[nl-progress-bar-source="is-source"]');
+    const definedSource = document.querySelector('[nl-progress-bar="is-source"]');
     const sourceEl = definedSource || document.body;
 
     if (!sourceEl) return;
@@ -56,15 +52,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const viewportHeight = window.innerHeight;
     const elementHeight = sourceEl.offsetHeight;
 
-    // B. Boucle sur les barres
-    const bars = document.querySelectorAll('[nl-progress-bar]');
+    // Sinon le script va essayer d'animer votre container principal !
+    const bars = document.querySelectorAll('[nl-progress-bar]:not([nl-progress-bar="is-source"])');
 
     bars.forEach(bar => {
-      // 1. On recupere la valeur brute (ex: "10vh")
+      // 1. On recupere la valeur brute
       const rawOffsetTop = getResponsiveRawValue(bar.getAttribute('nl-progress-bar-offset-top'));
       const rawOffsetBottom = getResponsiveRawValue(bar.getAttribute('nl-progress-bar-offset-bottom'));
 
-      // 2. On convertit tout en pixels pour le calcul
+      // 2. On convertit
       const offsetTop = toPx(rawOffsetTop);
       const offsetBottom = toPx(rawOffsetBottom);
 
@@ -83,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
       } 
       else if (type === 'circle') {
         const circles = bar.querySelectorAll('circle');
-        // On prend le dernier cercle trouve dans le SVG (celui qui sera au dessus)
         const progressCircle = circles[circles.length - 1]; 
 
         if (progressCircle) {
@@ -102,6 +97,5 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener('scroll', updateProgress);
   window.addEventListener('resize', updateProgress);
   
-  // delai au chargement pour etre sur que le CSS est charger
   setTimeout(updateProgress, 100); 
 });

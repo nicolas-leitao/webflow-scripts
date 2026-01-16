@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const viewportHeight = window.innerHeight;
     const elementHeight = sourceEl.offsetHeight;
 
-    // Sinon le script va essayer d'animer votre container principal !
+    // Empecher le script d'animer la source
     const bars = document.querySelectorAll('[nl-progress-bar]:not([nl-progress-bar="is-source"])');
 
     bars.forEach(bar => {

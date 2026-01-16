@@ -8,20 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // Si c'est juste un nombre, on considere que c'est des px
     if (!isNaN(v)) return parseFloat(v);
 
-    // Si c'est en VH
+    // VH
     if (v.endsWith('vh')) {
       return (parseFloat(v) * window.innerHeight) / 100;
     }
-    // Si c'est en VW
+    // VW
     if (v.endsWith('vw')) {
       return (parseFloat(v) * window.innerWidth) / 100;
     }
-    // Si c'est en REM
+    // REM
     if (v.endsWith('rem')) {
       const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
       return parseFloat(v) * rootSize;
     }
-    // Si c'est en en PX
+    // PX
     if (v.endsWith('px')) {
       return parseFloat(v);
     }
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const w = window.innerWidth;
 
     // Logique Breakpoints
-    if (values.length === 1) return values[0]; // Partout pareil
+    if (values.length === 1) return values[0]; // all
     if (w > 991) return values[0]; // Desktop
     if (w > 479) return values[1] !== undefined ? values[1] : values[0]; // Tablette
     return values[2] !== undefined ? values[2] : (values[1] !== undefined ? values[1] : values[0]); // Mobile
@@ -61,8 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     bars.forEach(bar => {
       // 1. On recupere la valeur brute (ex: "10vh")
-      const rawOffsetTop = getResponsiveRawValue(bar.getAttribute('nl-progress-offset-top'));
-      const rawOffsetBottom = getResponsiveRawValue(bar.getAttribute('nl-progress-offset-bottom'));
+      const rawOffsetTop = getResponsiveRawValue(bar.getAttribute('nl-progress-bar-offset-top'));
+      const rawOffsetBottom = getResponsiveRawValue(bar.getAttribute('nl-progress-bar-offset-bottom'));
 
       // 2. On convertit tout en pixels pour le calcul
       const offsetTop = toPx(rawOffsetTop);
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } 
       else if (type === 'circle') {
         const circles = bar.querySelectorAll('circle');
-        // On prend le dernier cercle trouve dans le SVG (celui du dessus)
+        // On prend le dernier cercle trouve dans le SVG (celui qui sera au dessus)
         const progressCircle = circles[circles.length - 1]; 
 
         if (progressCircle) {

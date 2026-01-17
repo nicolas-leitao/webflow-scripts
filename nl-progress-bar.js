@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const values = attrValue.split(',');
     const w = window.innerWidth;
 
+    // Logique Breakpoints
     if (values.length === 1) return values[0]; // all
     if (w > 991) return values[0]; // Desktop
     if (w > 479) return values[1] !== undefined ? values[1] : values[0]; // Tablette
@@ -43,7 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- 3. COEUR DU SYSTEME ---
   const updateProgress = () => {
-    const definedSource = document.querySelector('[nl-progress-bar="is-source"]');
+    // A. Trouver la source (div specifique ou body)
+    const definedSource = document.querySelector('[nl-progress-bar-src="is-source"]');
     const sourceEl = definedSource || document.body;
 
     if (!sourceEl) return;
@@ -52,15 +54,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const viewportHeight = window.innerHeight;
     const elementHeight = sourceEl.offsetHeight;
 
-    // Empecher le script d'animer la source
-    const bars = document.querySelectorAll('[nl-progress-bar]:not([nl-progress-bar="is-source"])');
+    // B. Boucle sur les barres
+    const bars = document.querySelectorAll('[nl-progress-bar]');
 
     bars.forEach(bar => {
-      // 1. On recupere la valeur brute
+      // 1. On recupere la valeur brute des offsets
+      // Attention : j'ai gardé les noms d'attributs de ton code fourni (nl-progress-bar-offset-...)
       const rawOffsetTop = getResponsiveRawValue(bar.getAttribute('nl-progress-bar-offset-top'));
       const rawOffsetBottom = getResponsiveRawValue(bar.getAttribute('nl-progress-bar-offset-bottom'));
 
-      // 2. On convertit
+      // 2. On convertit tout en pixels pour le calcul
       const offsetTop = toPx(rawOffsetTop);
       const offsetBottom = toPx(rawOffsetBottom);
 
@@ -76,7 +79,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (type === 'horizontal') {
         bar.style.width = `${percentage}%`;
+      }
+      // --- NOUVEL AJOUT : VERTICAL ---
+      else if (type === 'vertical') {
+        bar.style.height = `${percentage}%`;
       } 
+      // --- FIN NOUVEL AJOUT ---
       else if (type === 'circle') {
         const circles = bar.querySelectorAll('circle');
         const progressCircle = circles[circles.length - 1]; 

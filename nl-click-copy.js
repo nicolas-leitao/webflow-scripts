@@ -27,7 +27,7 @@ document.addEventListener("click", function (e) {
       
     } else {
       // Feedback Texte : cherche la bulle (div) SIBLING
-      const feedbackDiv = trigger.parentElement.querySelector('[nl-click-copy-msg="bulle"]');
+      const feedbackDiv = trigger.parentElement.querySelector('[nl-click-copy-msg="tooltip"]');
       if (feedbackDiv) {
         feedbackDiv.style.display = "block";
         setTimeout(() => { feedbackDiv.style.display = "none"; }, 1500);

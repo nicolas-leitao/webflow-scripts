@@ -4,28 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const toPx = (value) => {
     if (!value) return 0;
     const v = value.toString().trim();
-    
-    // Si c'est juste un nombre, on considere que c'est des px
     if (!isNaN(v)) return parseFloat(v);
-
-    // VH
-    if (v.endsWith('vh')) {
-      return (parseFloat(v) * window.innerHeight) / 100;
-    }
-    // VW
-    if (v.endsWith('vw')) {
-      return (parseFloat(v) * window.innerWidth) / 100;
-    }
-    // REM
+    if (v.endsWith('vh')) return (parseFloat(v) * window.innerHeight) / 100;
+    if (v.endsWith('vw')) return (parseFloat(v) * window.innerWidth) / 100;
     if (v.endsWith('rem')) {
       const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
       return parseFloat(v) * rootSize;
     }
-    // PX
-    if (v.endsWith('px')) {
-      return parseFloat(v);
-    }
-    
+    if (v.endsWith('px')) return parseFloat(v);
     return parseFloat(v) || 0;
   };
 
@@ -34,17 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!attrValue) return null;
     const values = attrValue.split(',');
     const w = window.innerWidth;
-
-    // Logique Breakpoints
-    if (values.length === 1) return values[0]; // all
-    if (w > 991) return values[0]; // Desktop
-    if (w > 479) return values[1] !== undefined ? values[1] : values[0]; // Tablette
-    return values[2] !== undefined ? values[2] : (values[1] !== undefined ? values[1] : values[0]); // Mobile
+    if (values.length === 1) return values[0]; 
+    if (w > 991) return values[0]; 
+    if (w > 479) return values[1] !== undefined ? values[1] : values[0]; 
+    return values[2] !== undefined ? values[2] : (values[1] !== undefined ? values[1] : values[0]); 
   };
 
   // --- 3. COEUR DU SYSTEME ---
   const updateProgress = () => {
-    // A. Trouver la source (div specifique ou body)
+    // A. Trouver la source
     const definedSource = document.querySelector('[nl-progress-bar-src="is-source"]');
     const sourceEl = definedSource || document.body;
 
@@ -58,20 +42,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const bars = document.querySelectorAll('[nl-progress-bar]');
 
     bars.forEach(bar => {
-      // 1. On recupere la valeur brute des offsets
-      // Attention : j'ai gardé les noms d'attributs de ton code fourni (nl-progress-bar-offset-...)
+      // 1. Offsets
       const rawOffsetTop = getResponsiveRawValue(bar.getAttribute('nl-progress-bar-offset-top'));
       const rawOffsetBottom = getResponsiveRawValue(bar.getAttribute('nl-progress-bar-offset-bottom'));
 
-      // 2. On convertit tout en pixels pour le calcul
       const offsetTop = toPx(rawOffsetTop);
       const offsetBottom = toPx(rawOffsetBottom);
 
-      // 3. Calculs
-      const effectiveHeight = elementHeight - offsetTop - offsetBottom;
-      const distanceFromTop = viewportHeight - (rect.top + offsetTop);
+      // --- CORRECTION MATHÉMATIQUE ---
       
-      let percentage = (distanceFromTop / (effectiveHeight + viewportHeight)) * 100;
+      // Distance parcourue, nombre de pixels du haut de l'article qui ont passé la ligne "Offset Top"
+      // rect.top diminue quand on scrolle. Si rect.top = offsetTop, alors traveled = 0.
+      const traveled = offsetTop - rect.top;
+
+      // Distance Totale à parcourir : 
+      // hauteur de l'article - hauteur de la fenêtre + ajustement
+      const totalToTravel = elementHeight - viewportHeight + offsetTop + offsetBottom;
+
+      // Calcul du pourcentage
+      let percentage = (traveled / totalToTravel) * 100;
       percentage = Math.max(0, Math.min(100, percentage));
 
       // 4. Rendu Visuel
@@ -80,11 +69,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (type === 'horizontal') {
         bar.style.width = `${percentage}%`;
       }
-      // --- NOUVEL AJOUT : VERTICAL ---
       else if (type === 'vertical') {
         bar.style.height = `${percentage}%`;
       } 
-      // --- FIN NOUVEL AJOUT ---
       else if (type === 'circle') {
         const circles = bar.querySelectorAll('circle');
         const progressCircle = circles[circles.length - 1]; 
@@ -101,9 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  // --- 4. DECLENCHEURS ---
   window.addEventListener('scroll', updateProgress);
   window.addEventListener('resize', updateProgress);
-  
   setTimeout(updateProgress, 100); 
 });
